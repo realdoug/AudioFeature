@@ -1,0 +1,9 @@
+.vscode
+.ipynb_checkpoints
+/data
+scratch.swift
+.DS_Store
+*/.build
+*/Packages
+*/*.xcodeproj
+

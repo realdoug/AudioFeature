@@ -1,0 +1,5 @@
+module CAudioFeature [system] {
+  umbrella header "caudiofeature.h"
+  link "sndfile"
+  export *
+}
