@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "BaseMath",
+        "repositoryURL": "https://github.com/jph00/BaseMath.git",
+        "state": {
+          "branch": null,
+          "revision": "449475d45ed2cd97498c92164bfdc8dbd9f53429",
+          "version": "1.0.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

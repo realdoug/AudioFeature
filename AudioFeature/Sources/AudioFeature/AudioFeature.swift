@@ -1,6 +1,6 @@
 import CAudioFeature
-// import TensorFlow
 
+// TODO: support formats other than float
 public func loadSound(_ filename: String) -> ([Float], SF_INFO) {
   var info = SF_INFO()
   info.format = 0
@@ -11,17 +11,4 @@ public func loadSound(_ filename: String) -> ([Float], SF_INFO) {
   sf_readf_float(file, UnsafeMutablePointer(&data), Int64(dataSize))
   sf_close(file)
   return (data, info)
-}
-
-struct PowerSpectrum {
-  // featureparams
-  // I can hardcode the default params for now.
-    // What are the default params?
-
-  // dither
-  // windowing
-
-  // fftw_plan
-  // inFftBuf_, outFftBuf_;
-  // fftMutix_
 }

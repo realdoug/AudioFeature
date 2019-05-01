@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "BaseMath",
+        "repositoryURL": "https://github.com/jph00/BaseMath.git",
+        "state": {
+          "branch": null,
+          "revision": "449475d45ed2cd97498c92164bfdc8dbd9f53429",
+          "version": "1.0.1"
+        }
+      },
+      {
+        "package": "SwiftyMKL",
+        "repositoryURL": "https://github.com/realdoug/SwiftyMKL",
+        "state": {
+          "branch": null,
+          "revision": "7f8a9e368d40e3d1badbcb738465d4412f727a6a",
+          "version": "0.0.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
