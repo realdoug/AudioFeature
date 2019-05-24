@@ -3,7 +3,7 @@ import AudioFeature
 import SwiftyMKL
 
 final class AudioFeatureTests: XCTestCase {
-    let filename = "../5d4e3bb8_nohash_0.wav"
+    let filename = "./Tests/data/sa1.wav"
 
     // TODO: wav2letter uses 5, but I ran into some float issues at that precision
     func roundedTo4(_ input: [Float]) -> [Float] {
@@ -23,7 +23,7 @@ final class AudioFeatureTests: XCTestCase {
 
     func testLoadSound() throws {
         let (_, fileinfo) = loadSound(filename)
-        XCTAssertEqual(fileinfo.frames, 12288)
+        XCTAssertEqual(fileinfo.frames, 52122)
     }
         
     func testPowerSpectrum() throws {
@@ -286,7 +286,7 @@ final class AudioFeatureTests: XCTestCase {
     }
 
     func testMfcc() throws {
-      let (wavInput, _) = loadSound("./Tests/data/sa1.wav")
+      let (wavInput, _) = loadSound(filename)
 
       var htkFeatures: [Float] = []
       let htkFile = try! String(contentsOfFile: "./Tests/data/sa1-mfcc.htk")
