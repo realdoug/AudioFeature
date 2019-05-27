@@ -7,4 +7,4 @@ Wav2letter uses libfftw, libsndfile and MKL, so you will need to have these thre
 # Benchmarks
 To run benchmark for MFCC and MFSC: 
 
-```swift run -Xswiftc -Ounchecked -Xcc -ffast-math -Xcc -O3 -Xcc -march=native -c release```
+```$ swift run -Xswiftc -Ounchecked -Xcc -ffast-math -Xcc -O3 -Xcc -march=native -c release```
