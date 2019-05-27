@@ -5,7 +5,7 @@ import SwiftyMKL
 final class AudioFeatureTests: XCTestCase {
     let filename = "./Tests/data/sa1.wav"
 
-    // TODO: wav2letter uses 5, but I ran into some float issues at that precision
+    // wav2letter uses 5, but I ran into some float issues at that precision
     func roundedTo4(_ input: [Float]) -> [Float] {
       return input.map({ Float(($0 * 10000).rounded() / 10000) })
     }
@@ -32,7 +32,6 @@ final class AudioFeatureTests: XCTestCase {
         let p = PowerSpectrum<Float>()
         for _ in 0...9 {
           let _ = p.apply(on: samples)
-          // TODO: compare result to htk
           assert(samples == samplesOrig)
         }
     }

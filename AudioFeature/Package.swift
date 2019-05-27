@@ -17,6 +17,10 @@ let package = Package(
       name: "AudioFeature",
       dependencies: ["CAudioFeature", "BaseMath", "SwiftyMKL-Static"]
     ),
+    .target(
+      name: "bench",
+      dependencies: ["AudioFeature"]
+    ),
     .testTarget(
       name: "AudioFeatureTests",
       dependencies: ["AudioFeature"]
