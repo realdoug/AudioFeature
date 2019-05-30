@@ -14,9 +14,11 @@ func frameSignal<DType : SupportsBasicMath>(
   // not range -1..1, hence scale up here to match (approx)
   let scale: DType = 32768.0
   var frames: [DType] = Array(repeating: 0, count: numFrames * frameSize)
+  let p = UnsafeMutableBufferPointer(start: frames.p, count: frames.count)
+  let inputP = UnsafeBufferPointer(start: input.p, count: input.count)
   for f in 0..<numFrames {
     for i in 0..<frameSize {
-      frames[f * frameSize + i] = scale * input[f * frameStride + i]
+      p[f * frameSize + i] = scale.mul(inputP[f * frameStride + i]);
     }
   }
   return frames;

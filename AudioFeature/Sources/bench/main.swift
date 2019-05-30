@@ -18,7 +18,7 @@ params.useEnergy = false;
 params.usePower = false;
 params.windowType = WindowType.hanning
 
-let mfcc = Mfcc<Float>(params: params)
+let mfcc = PowerSpectrum<Float>(params: params)
 
 let audioTimeSec = [1, 10, 15, 20, 25, 50, 100]
 let nTimes = 1000
