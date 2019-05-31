@@ -61,61 +61,63 @@ public class PowerSpectrum<DType : SupportsBasicMath> {
     // }
 
     if featureParams.zeroMeanFrame {
+      let framesBuf = UnsafeMutableBufferPointer(
+        start: frames.p,
+        count: frames.count
+      )
       for f in 0..<nFrames {
         let begin = f * nSamples
         let end = begin + nSamples
 
         let mean = UnsafeMutableBufferPointer(
-          start: frames.p + begin,
-          count: nSamples
+          rebasing: framesBuf[begin..<end]
         ).sum() / DType(nSamples)
 
         for i in begin..<end {
-          frames[i] = frames[i] - mean
+          framesBuf[i] = framesBuf[i] - mean
         }
       }
     }
 
     if featureParams.preemCoef != 0 {
-      // preEmphasis.apply(inPlace: frames);
+      preEmphasis.apply(inPlace: &frames);
     }
-    // windowing.apply(inPlace: &frames);
+    windowing.apply(inPlace: &frames);
 
     var dft: [DType] = Array(repeating: 0.0, count: K * nFrames)
+    var dftBuf = UnsafeMutableBufferPointer(start: dft.p, count: dft.count)
     for f in 0..<nFrames {
-    //   let begin = f * nSamples;
+      let begin = f * nSamples;
 
-    //   pthread_mutex_lock(&self.fftMutex)
+      pthread_mutex_lock(&self.fftMutex)
 
-    //   // original: std::copy(begin, begin + nSamples, inFftBuf_.data());
-    //   for i in 0..<nSamples {
-    //     inFftBuf[i] = Double(frames[begin + i])
-    //   }
+      // original: std::copy(begin, begin + nSamples, inFftBuf_.data());
+      for i in 0..<nSamples {
+        inFftBuf[i] = Double(frames[begin + i])
+      }
 
-    //   // precondition(outFftBuf.count == nFft * 2)
+      // original: std::fill(outFftBuf_.begin(), outFftBuf_.end(), 0.0);
+      for i in 0..<outFftBuf.count {
+        outFftBuf[i] = 0.0
+      }
 
-    //   // original: std::fill(outFftBuf_.begin(), outFftBuf_.end(), 0.0);
-    //   for i in 0..<outFftBuf.count {
-    //     outFftBuf[i] = 0.0
-    //   }
+      fftw_execute(fftPlan);
 
-    //   fftw_execute(fftPlan);
+      // Copy stuff to the redundant part
+      for i in K..<nFft {
+        let redundantA = outFftBuf[2 * nFft - 2 * i]
+        let reduntantB = -outFftBuf[2 * nFft - 2 * i + 1]
+        outFftBuf[2 * i] = redundantA
+        outFftBuf[2 * i + 1] = reduntantB
+      }
 
-    //   // Copy stuff to the redundant part
-    //   for i in K..<nFft {
-    //     let redundantA = outFftBuf[2 * nFft - 2 * i]
-    //     let reduntantB = -outFftBuf[2 * nFft - 2 * i + 1]
-    //     outFftBuf[2 * i] = redundantA
-    //     outFftBuf[2 * i + 1] = reduntantB
-    //   }
+      for i in 0..<K {
+        dftBuf[f * K + i] = DType(sqrt(
+            outFftBuf[2 * i] * outFftBuf[2 * i] +
+            outFftBuf[2 * i + 1] * outFftBuf[2 * i + 1]))
+      }
 
-    //   for i in 0..<K {
-    //     dft[f * K + i] = DType(sqrt(
-    //         outFftBuf[2 * i] * outFftBuf[2 * i] +
-    //         outFftBuf[2 * i + 1] * outFftBuf[2 * i + 1]))
-    //   }
-
-    //   pthread_mutex_unlock(&self.fftMutex)
+      pthread_mutex_unlock(&self.fftMutex)
     }
     return dft
   }

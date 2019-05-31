@@ -15,16 +15,19 @@ public struct Derivatives<DType : SupportsBasicMath> {
     let twoTimesWlPlusOne = 2 * windowLen + 1
     let denominator = DType(windowLen * (windowLen + 1) * twoTimesWlPlusOne) / 3.0
 
+    let inputBuf = UnsafeMutableBufferPointer(start: input.p, count: input.count)
+    let outputBuf = UnsafeMutableBufferPointer(start: output.p, count: output.count)
+ 
     for i in 0..<numFrames {
       for j in 0..<numFeatures {
         let curIx = i * numFeatures + j
         for d in 1...windowLen {
           let ix1 = curIx + min((numFrames - i - 1), d) * numFeatures
           let cmp = curIx - min(i, d) * numFeatures
-          let dif = input[ix1] - input[cmp]
-          output[curIx] = output[curIx] + DType(d) * dif
+          let dif = inputBuf[ix1] - inputBuf[cmp]
+          outputBuf[curIx] = outputBuf[curIx] + DType(d) * dif
         }
-        output[curIx] = output[curIx] / denominator
+        outputBuf[curIx] = outputBuf[curIx] / denominator
       }
     }
     return output
@@ -36,28 +39,36 @@ public struct Derivatives<DType : SupportsBasicMath> {
       return input
     }
 
+    let inputBuf = UnsafeMutableBufferPointer(start: input.p, count: input.count)
+
     let deltas = computeDerivative(input, deltaWindow, numFeatures)
+    let deltasBuf = UnsafeMutableBufferPointer(start: deltas.p, count: deltas.count)
+
     var szMul = 2
     var doubleDeltas = [DType](repeating: 0, count: deltas.count)
     if accWindow > 0 {
       szMul = 3
       doubleDeltas = computeDerivative(deltas, accWindow, numFeatures)
     }
+    let doubleDeltasBuf = UnsafeMutableBufferPointer(start: doubleDeltas.p, count: doubleDeltas.count)
+
     var output = [DType](repeating: 0.0, count: input.count * szMul)
+    let outputBuf = UnsafeMutableBufferPointer(start: output.p, count: output.count)
+
     let numFrames = input.count / numFeatures
     for i in 0..<numFrames {
       let curInIx = i * numFeatures
       let curOutIx = curInIx * szMul
 
-      output[curOutIx..<(curOutIx + numFeatures)] =
-        input[curInIx..<(curInIx + numFeatures)]
+      outputBuf[curOutIx..<(curOutIx + numFeatures)] =
+        inputBuf[curInIx..<(curInIx + numFeatures)]
 
-      output[(curOutIx + numFeatures)..<(curOutIx + 2 * numFeatures)] =
-        deltas[curInIx..<(curInIx + numFeatures)]
+      outputBuf[(curOutIx + numFeatures)..<(curOutIx + 2 * numFeatures)] =
+        deltasBuf[curInIx..<(curInIx + numFeatures)]
 
       if accWindow > 0 {
-        output[(curOutIx + 2 * numFeatures)..<(curOutIx + 3 * numFeatures)] =
-          doubleDeltas[curInIx..<(curInIx + numFeatures)]
+        outputBuf[(curOutIx + 2 * numFeatures)..<(curOutIx + 3 * numFeatures)] =
+          doubleDeltasBuf[curInIx..<(curInIx + numFeatures)]
       }
     }
     return output

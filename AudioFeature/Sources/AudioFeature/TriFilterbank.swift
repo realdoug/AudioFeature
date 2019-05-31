@@ -49,8 +49,9 @@ public struct TriFilterbank<DType : SupportsMKL> {
 
   public func apply(_ input: [DType], melFloor: DType = 0.0) -> [DType] {
     var output: [DType] = mklGemm(input, H, numFilters, filterLength)
+    var outputBuff = UnsafeMutableBufferPointer(start: output.p, count: output.count)
     for i in 0..<output.count {
-      output[i] = max(output[i], melFloor)
+      outputBuff[i] = max(outputBuff[i], melFloor)
     }
     return output
   }

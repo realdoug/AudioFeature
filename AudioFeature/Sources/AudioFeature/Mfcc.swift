@@ -26,10 +26,10 @@ public class Mfcc<DType : SupportsMKL> : Mfsc<DType> {
     var energy = [DType](repeating: 0.0, count: nFrames)
     
     if featureParams.useEnergy && featureParams.rawEnergy {
+      var framesBuffer = UnsafeMutableBufferPointer(start: frames.p, count: frames.count)
       for f in 0..<nFrames {
-        let beginPtr = frames.p + f * nSamples
-        let framesView = UnsafeMutableBufferPointer(start: beginPtr, count: nSamples)
-
+        let begin = f * nSamples
+        let framesView = UnsafeMutableBufferPointer(rebasing: framesBuffer[begin..<(begin+nSamples)])
         energy[f] = framesView.summul(framesView).log()
       }
     }
@@ -42,9 +42,10 @@ public class Mfcc<DType : SupportsMKL> : Mfsc<DType> {
 
     if featureParams.useEnergy {
       if !featureParams.rawEnergy {
+        var framesBuffer = UnsafeMutableBufferPointer(start: frames.p, count: frames.count)
         for f in 0..<nFrames {
-          let beginPtr = frames.p + f * nSamples
-          let framesView = UnsafeMutableBufferPointer(start: beginPtr, count: nSamples)
+          let begin = f * nSamples
+          let framesView = UnsafeMutableBufferPointer(rebasing: framesBuffer[begin..<(begin+nSamples)])
           energy[f] = framesView.summul(framesView).log()
         }
       }

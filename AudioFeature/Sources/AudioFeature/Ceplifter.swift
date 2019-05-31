@@ -17,7 +17,7 @@ public struct Ceplifter<DType : SupportsBasicMath> {
   }
 
   public func apply(on input: [DType]) -> [DType]{
-    var output = input.copy()
+    var output = input.map {$0}
     apply(inPlace: &output)
     return output
   }
@@ -25,8 +25,9 @@ public struct Ceplifter<DType : SupportsBasicMath> {
   public func apply(inPlace input: inout [DType]) {
     // LOG_IF(FATAL, (input.size() % numFilters_) != 0);
     var n: Int = 0
+    let inputBuf = UnsafeMutableBufferPointer(start: input.p, count: input.count)
     for i in 0..<input.count {
-      input[i] = input[i] * coefs[n]
+      inputBuf[i] = inputBuf[i] * coefs[n]
       n += 1
       if n == numFilters {
         n = 0

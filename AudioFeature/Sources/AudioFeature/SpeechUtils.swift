@@ -18,7 +18,7 @@ func frameSignal<DType : SupportsBasicMath>(
   let inputP = UnsafeBufferPointer(start: input.p, count: input.count)
   for f in 0..<numFrames {
     for i in 0..<frameSize {
-      p[f * frameSize + i] = scale.mul(inputP[f * frameStride + i]);
+      p[f * frameSize + i] = scale.mul(inputP[f * frameStride + i]); 
     }
   }
   return frames;
