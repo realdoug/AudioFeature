@@ -5,7 +5,7 @@ This is a Swift port of the [featurization portion of FAIR's wav2letter++](https
 I could not find a good spectrogram implementation in Swift, so I decided to port the /feature section of W2l.  This will likely never be as fast as the C++ version, but I'm hoping to get as close as I can to performance parity.
 
 # Usage/Notes
-This uses the awesome [BaseMath](https://github.com/jph00/BaseMath/) and [SwiftyMKL](https://github.com/jph00/SwiftyMKL/).  Adding the following flags to your SwiftPM command will yield the best performance.  (See BaseMath documenation for details).
+This relies on [BaseMath](https://github.com/jph00/BaseMath/) and [SwiftyMKL](https://github.com/jph00/SwiftyMKL/) for vector math.  Adding the following flags to your SwiftPM command will yield the best performance.  (See BaseMath documenation for details).
 
 ```-Xswiftc -Ounchecked -Xcc -ffast-math -Xcc -O2 -Xcc -march=native```
 
