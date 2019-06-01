@@ -1,14 +1,27 @@
 # AudioFeature
-This is a Swift port of the [featurization portion of FAIR's wav2letter++](https://github.com/facebookresearch/wav2letter/tree/master/src/feature).  It includes implementations & tests for PowerSpectrum, Mfsc & Mfcc.
+This is a Swift port of the [featurization portion of FAIR's wav2letter++](https://github.com/facebookresearch/wav2letter/tree/master/src/feature), including implementations & tests for PowerSpectrum, Mfsc & Mfcc.  These functions are part of a larger system described in [their 2018 paper](https://arxiv.org/abs/1812.07625).
 
-# Notes
-This uses the excellent [BaseMath](https://github.com/jph00/BaseMath/) and [SwiftyMKL](https://github.com/jph00/SwiftyMKL/).  Adding the following flags to your SwiftPM command will yield the best performance.  (See BaseMath documenation for details)
+# Background
+I could not find a good spectrogram implementation in Swift, so I decided to port the /feature section of W2l.  This will likely never be as fast as the C++ version, but I'm hoping to get as close as I can to performance parity.
 
-```-Xswiftc -Ounchecked -Xcc -ffast-math -Xcc -O3 -Xcc -march=native```
+# Usage/Notes
+This uses the awesome [BaseMath](https://github.com/jph00/BaseMath/) and [SwiftyMKL](https://github.com/jph00/SwiftyMKL/).  Adding the following flags to your SwiftPM command will yield the best performance.  (See BaseMath documenation for details).
 
-It also relies on libfftw, libsndfile and MKL, so you will need to have those three libraries installed and discoverable within your system.  The very easiest way to install MKL is to clone & build [SwiftyMKL](https://github.com/jph00/SwiftyMKL/), which will download and uzip the appropriate Intel libraries into a subdirectory.  You can add ```-Xcc -I``` and ```-Xlinker -L``` flags to your build command and set ```LD_LIBRARY_PATH``` so the files can be included & linked by SwiftPM.
+```-Xswiftc -Ounchecked -Xcc -ffast-math -Xcc -O2 -Xcc -march=native```
+
+You will also need to have [fftw](http://fftw.org/), [libsndfile](http://www.mega-nerd.com/libsndfile/) and [MKL](https://software.intel.com/en-us/mkl) installed and visible to the compiler & linker.  [The SwiftyMKL Makefile](https://github.com/jph00/SwiftyMKL/blob/master/Makefile) has a target that will download and uzip the appropriate Intel libraries for convenience.
+
+```Mfsc``` and ```Mfcc``` support Double and Float.  For example:
+
+```swift
+let mfsc = Mfsc<Float>()
+mfsc.apply(on: input)
+
+let mfcc Mfcc<Double>()
+mfcc.apply(on: input)
+```
 
 # Benchmarks
-To run benchmark for MFCC and MFSC: 
+To run the benchmark for MFCC: 
 
 ```$ swift run -Xswiftc -Ounchecked -Xcc -ffast-math -Xcc -O3 -Xcc -march=native -c release```
