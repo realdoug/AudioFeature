@@ -2,5 +2,6 @@ module CAudioFeature [system] {
   umbrella header "include/caudiofeature.h"
   link "sndfile"
   link "fftw3"
+  link "fftw3f"
   export *
 }

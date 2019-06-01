@@ -45,8 +45,7 @@ public class PowerSpectrum<DType : SupportsBasicMath> {
       return []
     }
 
-    // return powSpectrumImpl(&frames)
-    return input
+    return powSpectrumImpl(&frames)
   }
 
   func powSpectrumImpl(_ frames: inout [DType]) -> [DType] {
@@ -54,6 +53,9 @@ public class PowerSpectrum<DType : SupportsBasicMath> {
       start: frames.p,
       count: frames.count
     ) 
+
+    let inFftBufP = UnsafeMutableBufferPointer(start: inFftBuf.p, count: inFftBuf.count)
+    let outFftBufP = UnsafeMutableBufferPointer(start: outFftBuf.p, count: outFftBuf.count)
 
     let nSamples = featureParams.numFrameSizeSamples();
     let nFrames = frames.count / nSamples;
@@ -94,31 +96,30 @@ public class PowerSpectrum<DType : SupportsBasicMath> {
 
       // original: std::copy(begin, begin + nSamples, inFftBuf_.data());
       for i in 0..<nSamples {
-        // this is an extremely expensive operation for whatever reason.
-        // fftw i *think* has a float option which we can use conditionally
-        inFftBuf[i] = Double(framesBuf[begin + i])
+        // casting is an extremely expensive operation for whatever reason.
+        inFftBufP[i] = Double(framesBuf[begin + i])
       }
 
       // original: std::fill(outFftBuf_.begin(), outFftBuf_.end(), 0.0);
-      // for i in 0..<outFftBuf.count {
-      //   outFftBuf[i] = 0.0
-      // }
+      for i in 0..<outFftBuf.count {
+        outFftBufP[i] = 0.0
+      }
 
-      // fftw_execute(fftPlan);
+      fftw_execute(fftPlan);
 
-      // // Copy stuff to the redundant part
-      // for i in K..<nFft {
-      //   let redundantA = outFftBuf[2 * nFft - 2 * i]
-      //   let reduntantB = -outFftBuf[2 * nFft - 2 * i + 1]
-      //   outFftBuf[2 * i] = redundantA
-      //   outFftBuf[2 * i + 1] = reduntantB
-      // }
+      // Copy stuff to the redundant part
+      for i in K..<nFft {
+        let redundantA = outFftBufP[2 * nFft - 2 * i]
+        let reduntantB = -outFftBufP[2 * nFft - 2 * i + 1]
+        outFftBufP[2 * i] = redundantA
+        outFftBufP[2 * i + 1] = reduntantB
+      }
 
-      // for i in 0..<K {
-      //   dftBuf[f * K + i] = DType(sqrt(
-      //       outFftBuf[2 * i] * outFftBuf[2 * i] +
-      //       outFftBuf[2 * i + 1] * outFftBuf[2 * i + 1]))
-      // }
+      for i in 0..<K {
+        dftBuf[f * K + i] = DType(sqrt(
+            outFftBuf[2 * i] * outFftBuf[2 * i] +
+            outFftBuf[2 * i + 1] * outFftBuf[2 * i + 1]))
+      }
 
       pthread_mutex_unlock(&self.fftMutex)
     }
