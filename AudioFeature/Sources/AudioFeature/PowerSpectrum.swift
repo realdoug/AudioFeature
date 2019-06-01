@@ -1,6 +1,10 @@
 import BaseMath
 import CAudioFeature
-import Darwin
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
 
 public class PowerSpectrum<DType : SupportsBasicMath> {
   var featureParams: FeatureParams
