@@ -1,5 +1,6 @@
 import XCTest
 import AudioFeature
+import CAudioFeature
 import SwiftyMKL
 
 final class AudioFeatureTests: XCTestCase {
@@ -22,12 +23,12 @@ final class AudioFeatureTests: XCTestCase {
     }
 
     func testLoadSound() throws {
-        let (_, fileinfo) = loadSound(filename)
+        let (_, fileinfo) = try! loadSound(filename, as: Double.self)
         XCTAssertEqual(fileinfo.frames, 52122)
     }
         
     func testPowerSpectrum() throws {
-        let (samples, _) = loadSound(filename)
+        let (samples, _) = try! loadSound(filename, as: Float.self)
         let samplesOrig = samples.copy()
         let p = PowerSpectrum<Float>()
         for _ in 0...9 {
@@ -285,7 +286,7 @@ final class AudioFeatureTests: XCTestCase {
     }
 
     func testMfcc() throws {
-      let (wavInput, _) = loadSound(filename)
+      let (wavInput, _) = try! loadSound(filename, as: Float.self)
 
       var htkFeatures: [Float] = []
       let htkFile = try! String(contentsOfFile: "./Tests/data/sa1-mfcc.htk")
