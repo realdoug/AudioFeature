@@ -14,13 +14,13 @@ You will also need to have [fftw](http://fftw.org/), [libsndfile](http://www.meg
 ```Mfsc``` and ```Mfcc``` support Double and Float.  For example:
 
 ```swift
-let input = try! loadSound("/any/file/name.wav", as: Float)
+let input = try! loadSound("/any/file/name.wav", as: Float.self)
 let mfsc = Mfsc<Float>()
 mfsc.apply(on: input)
 
 // or
 
-let input = try! loadSound("/any/file/name.wav", as: Double)
+let input = try! loadSound("/any/file/name.wav", as: Double.self)
 let mfcc Mfcc<Double>()
 mfcc.apply(on: input)
 ```
